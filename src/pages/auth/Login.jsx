@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Eye, EyeOff, Mail, Lock } from "lucide-react"
+import { Link } from "react-router"
 
 export default function LoginForm({ onSubmit }) {
   const [formData, setFormData] = useState({
@@ -36,11 +37,35 @@ export default function LoginForm({ onSubmit }) {
     if (!validateForm()) return
 
     setIsLoading(true)
+    try {
+      const response = await axios.post(
+              `${API_BASE_URL}/auth/login`,
+              formData
+            );
+      
+            if (!response.success) {
+              throw new Error(response.message || "Registration failed");
+            }
+      
+            console.log("Registration successful:", response);
+            alert("Registration successful!");
+      // saving token in localstorage
+      if (!response.token) {
+        throw new Error(response.message || "Token not available");
+      }
+      localStorage.setItem("token" , response.token)
+            // Redirect to home or handle successful registration
+            navigate("/");
+      
+    } catch (error) {
+      setErrors(error.message || "Sign In failed")
+    } finally {
+      setIsLoading(false);
+    }
+
+
     // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      onSubmit(formData)
-    }, 1000)
+  
   }
 
   const handleChange = (e) => {
@@ -116,9 +141,9 @@ export default function LoginForm({ onSubmit }) {
               <input type="checkbox" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
               <label className="ml-2 block text-sm text-gray-900 dark:text-gray-300">Remember me</label>
             </div>
-            <a href="#" className="text-sm text-blue-600 hover:text-blue-500">
+            <Link to={"/forgot"} className="text-sm text-blue-600 hover:text-blue-500">
               Forgot password?
-            </a>
+            </Link>
           </div>
 
           <button
@@ -140,9 +165,9 @@ export default function LoginForm({ onSubmit }) {
         <div className="mt-6 text-center">
           <p className="text-gray-600 dark:text-gray-400">
             Don't have an account?{" "}
-            <a href="#" className="text-blue-600 hover:text-blue-500 font-medium">
+            <Link to={"/register"} className="text-blue-600 hover:text-blue-500 font-medium">
               Sign up
-            </a>
+            </Link>
           </p>
         </div>
       </div>

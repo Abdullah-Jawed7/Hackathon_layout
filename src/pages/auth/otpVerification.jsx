@@ -24,14 +24,14 @@ function OtpVerification() {
    const handleSubmit = async (e) => {
      e.preventDefault()
      if (!validateForm()) return
- 
      setIsLoading(true)
      // Simulate API call
+     
      setTimeout(() => {
        setIsLoading(false)
        setIsSubmitted(true)
        onSubmit({ otp })
-     }, 1000)
+     }, 5000)
    }
  
    const handleChange = (e) => {
@@ -41,39 +41,39 @@ function OtpVerification() {
      }
    }
  
-   if (isSubmitted) {
-     return (
-       <div className="w-full max-w-md mx-auto">
-         <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg px-8 pt-6 pb-8 mb-4 text-center">
-           <div className="mb-6">
-             <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 dark:bg-green-900">
-               <Mail className="h-6 w-6 text-green-600 dark:text-green-400" />
-             </div>
-             <h2 className="mt-4 text-2xl font-bold text-gray-900 dark:text-white">Check your email</h2>
-             <p className="text-gray-600 dark:text-gray-400 mt-2">We've sent a password reset link to testing@gmail.com</p>
-           </div>
+  //  if (isSubmitted) {
+  //    return (
+  //      <div className="w-full max-w-md mx-auto">
+  //        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg px-8 pt-6 pb-8 mb-4 text-center">
+  //          <div className="mb-6">
+  //            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 dark:bg-green-900">
+  //              <Mail className="h-6 w-6 text-green-600 dark:text-green-400" />
+  //            </div>
+  //            <h2 className="mt-4 text-2xl font-bold text-gray-900 dark:text-white">Check your email</h2>
+  //            <p className="text-gray-600 dark:text-gray-400 mt-2">We've sent a password reset link to testing@gmail.com</p>
+  //          </div>
  
-           <div className="space-y-4">
-             <p className="text-sm text-gray-500 dark:text-gray-400">
-               Didn't receive the email? Check your spam folder or try again.
-             </p>
+  //          <div className="space-y-4">
+  //            <p className="text-sm text-gray-500 dark:text-gray-400">
+  //              Didn't receive the email? Check your spam folder or try again.
+  //            </p>
  
-             <button
-               onClick={() => setIsSubmitted(false)}
-               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-             >
-               Try again
-             </button>
+  //            <button
+  //              onClick={() => setIsSubmitted(false)}
+  //              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+  //            >
+  //              Try again
+  //            </button>
  
-             <button className="w-full text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-               <ArrowLeft className="h-4 w-4 mr-2" />
-               Back to sign in
-             </button>
-           </div>
-         </div>
-       </div>
-     )
-   }
+  //            <button className="w-full text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
+  //              <ArrowLeft className="h-4 w-4 mr-2" />
+  //              Back to sign in
+  //            </button>
+  //          </div>
+  //        </div>
+  //      </div>
+  //    )
+  //  }
  
    return (
      <div className="w-full max-w-md mx-auto">
@@ -113,18 +113,18 @@ function OtpVerification() {
              {isLoading ? (
                <div className="flex items-center justify-center">
                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                 Sending...
+                 verifying...
                </div>
              ) : (
-               "Send Reset Link"
+               "Verify Otp"
              )}
            </button>
          </form>
  
-         <div className="mt-6 text-center">
-           <button className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 font-medium flex items-center justify-center mx-auto transition-colors">
-             <ArrowLeft className="h-4 w-4 mr-2" />
-             Back to sign in
+         <div className="flex gap-3 mt-6 text-center">
+          <span>Didn't Receive Anything ?</span>
+           <button disabled={isLoading} className="disabled:opacity-50 disabled:cursor-not-allowed text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 font-semibold  transition-colors">
+             Resend Otp
            </button>
          </div>
        </div>

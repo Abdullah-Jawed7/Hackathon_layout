@@ -5,6 +5,7 @@ import { Eye, EyeOff, Mail, Lock, User, IdCard, Building, School } from "lucide-
 import axios from "axios";
 import { useNavigate } from "react-router";
 import { validateForm } from "../../utils/formValidation.js";
+import { base_url } from "../../constants.js";
 
 export default function RegisterForm() {
   const navigate = useNavigate();
@@ -38,28 +39,34 @@ export default function RegisterForm() {
       submitData.append("city", formData.city);
       submitData.append("password", formData.password);
       submitData.append("cPassword", formData.confirmPassword);
+      submitData.append("role", "");
 
       // Add avatar if provided
       if (formData.avatar) {
         submitData.append("avatar", formData.avatar);
       }
+      console.log(base_url);
+      
       const response = await axios.post(
-        `${API_BASE_URL}/auth/register`,
+        `${base_url}/user/register`,
         submitData
       );
+      console.log(response);
+      
 
       if (!response.success) {
         throw new Error(response.message || "Registration failed");
       }
 
-      const data = await response.json();
-      console.log("Registration successful:", data);
+      console.log("Registration successful:", response.data.message);
       alert("Registration successful!");
 
       // Redirect to login or handle successful registration
       navigate("/otp");
     } catch (err) {
-      setErrors(err.message || "Registration failed. Please try again.");
+      // Activate toast
+      console.log(err.response.data.message)
+      setErrors(err.response.data.message || "Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
