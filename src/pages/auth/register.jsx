@@ -1,14 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, EyeOff, Mail, Lock, User, IdCard, Building, School } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router";
 import { validateForm } from "../../utils/formValidation.js";
 import { base_url } from "../../constants.js";
+import { ToastAlert } from "../../utils/toast.js";
+import { addUser, } from "../../redux/slices/userSlice.js";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function RegisterForm() {
+  const dispatch = useDispatch()
+  const {userDetails} =  useSelector((state)=> state.user)
   const navigate = useNavigate();
+  useEffect(()=>{
+      console.log(userDetails)
+      localStorage.setItem("id" ,userDetails?._id)
+  },[userDetails])
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -32,14 +41,13 @@ export default function RegisterForm() {
       const submitData = new FormData();
 
       // Append all form fields
-      submitData.append("fullName", formData.fullName);
+      submitData.append("fullName", formData.name);
       submitData.append("email", formData.email);
-      submitData.append("identityNumber", formData.identityNumber);
+      // submitData.append("identityNumber", formData.identityNumber);
       submitData.append("country", formData.country);
       submitData.append("city", formData.city);
       submitData.append("password", formData.password);
       submitData.append("cPassword", formData.confirmPassword);
-      submitData.append("role", "");
 
       // Add avatar if provided
       if (formData.avatar) {
@@ -48,23 +56,32 @@ export default function RegisterForm() {
       console.log(base_url);
       
       const response = await axios.post(
-        `${base_url}/user/register`,
+        `${base_url}/api/auth/register`,
         submitData
       );
-      console.log(response);
+      console.log(response.data.message);
       
 
-      if (!response.success) {
-        throw new Error(response.message || "Registration failed");
-      }
-
-      console.log("Registration successful:", response.data.message);
-      alert("Registration successful!");
-
+      // if (!response.data.success) {
+      //   ToastAlert({
+      //   type: "error",
+      //   message: response.data.message  || "something went wrong"
+      // })
+      // }
+      dispatch(addUser(response.data.data))
+      ToastAlert({
+        type:"success",
+        message:response.data.message,
+      })
       // Redirect to login or handle successful registration
       navigate("/otp");
     } catch (err) {
       // Activate toast
+         ToastAlert({
+        type: "error",
+        message: err.response.data.message  || "something went wrong"
+      })
+
       console.log(err.response.data.message)
       setErrors(err.response.data.message || "Registration failed. Please try again.");
     } finally {
@@ -141,7 +158,7 @@ export default function RegisterForm() {
               <p className="text-red-500 text-xs mt-1">{errors.email}</p>
             )}
           </div>
-          {/* identity Number */}
+          {/* identity Number 
           <div>
             <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
               Identity Number
@@ -166,7 +183,8 @@ export default function RegisterForm() {
                 {errors.identityNumber}
               </p>
             )}
-          </div>
+          </div> 
+          */}
           {/* country and city */}
           <div className="flex items-center gap-3 mb-2 flex-col sm:flex-row">
             {/* country */}
