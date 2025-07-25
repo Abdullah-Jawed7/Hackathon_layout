@@ -1,32 +1,34 @@
-// import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
-// const initialState = {
-//   usersDetails: {},
-//   isLogin: false,
-//   isLoading: false,
-// };
+const initialState = {
+  userDetails: null,
+};
 
-// // slice = reducer + actionHandler
-// const usersSlice = createSlice({
-//   name: "users",
-//   initialState: initialState,
-//   reducers: {
-//     addUser: (state, action) => {
-//       state.users = action.payload;
-//     },
-//     toggleLogin: (state) => {
-//       state.isLogin = !state.isLogin;
-//     },
-//     setLoading: (state) => {
-//       state.isLoading = true;
-//     },
-//     removeLoading: (state) => {
-//       state.isLoading = false;
-//     },
-//   },
-// });
+// slice = reducer + actionHandler
+const userSlice = createSlice({
+  name: "user",
+  initialState: initialState,
+  reducers: {
+    addUser: (state, action) => {
+      state.userDetails = action.payload;
+    },
+    removeUser:(state) =>{
+        state.userDetails = null
+    }
 
-// export const { addUser, toggleLogin } = usersSlice.actions;
+    // toggleLogin: (state) => {
+    //   state.isLogin = !state.isLogin;
+    // },
+    // setLoading: (state) => {
+    //   state.isLoading = true;
+    // },
+    // removeLoading: (state) => {
+    //   state.isLoading = false;
+    // },
+  },
+});
+
+export const { addUser, removeUser } = userSlice.actions;
 
 // // export const apiCall =  () => async (dispatch) => {
 // //   try {
@@ -39,4 +41,4 @@
 // //   }
 // // }
 
-// export default usersSlice.reducer;
+export default userSlice.reducer;
