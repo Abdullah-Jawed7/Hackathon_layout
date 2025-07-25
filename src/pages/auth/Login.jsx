@@ -1,92 +1,96 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Eye, EyeOff, Mail, Lock } from "lucide-react"
-import { Link } from "react-router"
+import { useState } from "react";
+import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { Link, useNavigate } from "react-router";
+import axios from "axios";
+import { base_url } from "../../constants.js";
+import { validateLogin } from "../../utils/formValidation.js";
+import { ToastAlert } from "../../utils/toast.js";
+import { useDispatch, useSelector } from "react-redux";
+import { addUser } from "../../redux/slices/userSlice.js";
 
 export default function LoginForm({ onSubmit }) {
+  const { userDetails } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [errors, setErrors] = useState({})
-  const [isLoading, setIsLoading] = useState(false)
-
-  const validateForm = () => {
-    const newErrors = {}
-
-    if (!formData.email) {
-      newErrors.email = "Email is required"
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid"
-    }
-
-    if (!formData.password) {
-      newErrors.password = "Password is required"
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters"
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!validateForm()) return
+    e.preventDefault();
+    if (!validateLogin(formData, setErrors)) return;
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const response = await axios.post(
-              `${API_BASE_URL}/auth/login`,
-              formData
-            );
-      
-            if (!response.success) {
-              throw new Error(response.message || "Registration failed");
-            }
-      
-            console.log("Registration successful:", response);
-            alert("Registration successful!");
-      // saving token in localstorage
-      if (!response.token) {
-        throw new Error(response.message || "Token not available");
+      const response = await axios.post(`${base_url}/api/auth/login`, formData);
+      console.log(
+        "Registration successful:",
+        response?.data?.data?.accessToken
+      );
+      if (!response?.data?.data?.accessToken) {
+        ToastAlert({
+          type: "error",
+          message: "Token not found!",
+        });
       }
-      localStorage.setItem("token" , response.token)
-            // Redirect to home or handle successful registration
-            navigate("/");
-      
+      dispatch(addUser(response?.data?.data));
+      localStorage.setItem("accessToken", response?.data?.data?.accessToken);
+
+      ToastAlert({
+        type: "success",
+        message: response.data.data.message || "User loggedIn successfully",
+      });
+      // Redirect to home or handle successful registration
+      navigate("/");
     } catch (error) {
-      setErrors(error.message || "Sign In failed")
+      console.log(error.response);
+      ToastAlert({
+        type: "error",
+        message: error.response.data.message,
+      });
+      if (error.response.data.statusCode == 302) {
+        dispatch(addUser({email : formData.email}));
+        localStorage.setItem("id", error?.response?.data?.errors[0]);
+
+        navigate("/otp");
+      }
+      setErrors(error.response.data.message || "Sign In failed");
     } finally {
       setIsLoading(false);
     }
-
-
-    // Simulate API call
-  
-  }
+  };
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }))
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
-  }
+  };
 
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg px-8 pt-6 pb-8 mb-4">
         <div className="mb-6 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Sign In</h2>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">Welcome back! Please sign in to your account.</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Sign In
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">
+            Welcome back! Please sign in to your account.
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Email Address</label>
+            <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
+              Email Address
+            </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Mail className="h-5 w-5 text-gray-400" />
@@ -102,11 +106,15 @@ export default function LoginForm({ onSubmit }) {
                 placeholder="Enter your email"
               />
             </div>
-            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Password</label>
+            <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
+              Password
+            </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Lock className="h-5 w-5 text-gray-400" />
@@ -133,15 +141,25 @@ export default function LoginForm({ onSubmit }) {
                 )}
               </button>
             </div>
-            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+            )}
           </div>
 
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <input type="checkbox" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-              <label className="ml-2 block text-sm text-gray-900 dark:text-gray-300">Remember me</label>
+              <input
+                type="checkbox"
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label className="ml-2 block text-sm text-gray-900 dark:text-gray-300">
+                Remember me
+              </label>
             </div>
-            <Link to={"/forgot"} className="text-sm text-blue-600 hover:text-blue-500">
+            <Link
+              to={"/forgot"}
+              className="text-sm text-blue-600 hover:text-blue-500"
+            >
               Forgot password?
             </Link>
           </div>
@@ -165,12 +183,15 @@ export default function LoginForm({ onSubmit }) {
         <div className="mt-6 text-center">
           <p className="text-gray-600 dark:text-gray-400">
             Don't have an account?{" "}
-            <Link to={"/register"} className="text-blue-600 hover:text-blue-500 font-medium">
+            <Link
+              to={"/register"}
+              className="text-blue-600 hover:text-blue-500 font-medium"
+            >
               Sign up
             </Link>
           </p>
         </div>
       </div>
     </div>
-  )
+  );
 }
