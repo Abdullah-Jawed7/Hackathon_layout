@@ -1,5 +1,5 @@
 "use server"
-import { Outlet } from 'react-router'
+import { Navigate, Outlet } from 'react-router'
 
 function AuthLayout() {
 
