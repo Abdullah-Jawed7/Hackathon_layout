@@ -4,20 +4,13 @@ import RegisterForm from './pages/auth/register.jsx'
 import LoginForm from './pages/auth/Login.jsx'
 import AuthLayout from "./pages/auth/layout.jsx"
 import OtpVerification from './pages/auth/otpVerification.jsx'
-import { useDispatch, useSelector } from 'react-redux'
 import { Bounce, ToastContainer } from 'react-toastify'
+import HomePage from './pages/public/home.jsx'
 
 function App() {
-  // const {theme} = useSelector(state => state?.theme)
-  // // theme handler
-  // useEffect(()=>{
-  //   console.log(theme)  
-  //   if (theme === "Light") {   
-  //     document.documentElement.classList.remove("dark");
-  //   } else {
-  //     document.documentElement.classList.add("dark");
-  //   }
-  // },[theme])
+  
+
+ 
 
 
   return (
@@ -28,6 +21,9 @@ function App() {
     <Route path='/register' element={<RegisterForm/>}/>
     <Route path='/login' element={<LoginForm/>}/>
     <Route path='/otp' element={<OtpVerification/>}/>
+    </Route>
+    <Route>
+      <Route path='/' element={<HomePage/>}/>
     </Route>
 
    </Routes>
