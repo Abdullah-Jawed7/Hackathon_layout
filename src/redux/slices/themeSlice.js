@@ -1,27 +1,30 @@
-// import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
-// const initialState = {
-//   theme:light ,
-// }
+const initialState = {
+  theme: "light" ,
+  isLoading:false
+}
 
-// // slice = reducer + actionHandler
-// const themeSlice = createSlice({
-//   name: 'theme',
-//   initialState: initialState,
-//   reducers: {
-//     darkTheme: (state) => {
-//       state.theme = 'Dark'
-//     },
-//     lightTheme: (state) => {
-//       state.theme = 'Light'
-//     },
+// slice = reducer + actionHandler
+const themeSlice = createSlice({
+  name: 'theme',
+  initialState: initialState,
+  reducers: {
+    darkTheme: (state) => {
+      state.theme = 'dark'
+    },
+    lightTheme: (state) => {
+      state.theme = 'light'
+    },
+     setLoading: (state , action) => {
+      state.isLoading = action.payload;
+    },
     
-//   }
-// })
+  }
+})
+ 
 
-// const 
 
+export const {darkTheme,lightTheme,setLoading} = themeSlice.actions
 
-// export const {addUser,toggleLogin} = themeSlice.actions
-
-// export default themeSlice.reducer
+export default themeSlice.reducer
