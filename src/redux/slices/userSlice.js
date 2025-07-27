@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   userDetails: null,
+  isLoading:false
 };
 
 // slice = reducer + actionHandler
@@ -12,23 +13,16 @@ const userSlice = createSlice({
     addUser: (state, action) => {
       state.userDetails = action.payload;
     },
-    removeUser:(state) =>{
+    logout:(state) =>{
         state.userDetails = null
-    }
-
-    // toggleLogin: (state) => {
-    //   state.isLogin = !state.isLogin;
-    // },
-    // setLoading: (state) => {
-    //   state.isLoading = true;
-    // },
-    // removeLoading: (state) => {
-    //   state.isLoading = false;
-    // },
+    },
+    setLoading: (state , action) => {
+      state.isLoading = action.payload;
+    },
   },
 });
 
-export const { addUser, removeUser } = userSlice.actions;
+export const { addUser, logout , setLoading  } = userSlice.actions;
 
 // // export const apiCall =  () => async (dispatch) => {
 // //   try {
